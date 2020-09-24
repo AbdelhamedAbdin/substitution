@@ -14,11 +14,11 @@ int main(int argc, string argv[])
     else
     {
         // key
-        string ciphertext = argv[1]; // "VCHRPZGJNTLSKFBDQWAXEUYMOI"
+        string ciphertext = argv[1];
         int cipher_length = strlen(ciphertext);
         string msg_error = "\0";
         int x = 0;
-
+        // charge of the count of key
         if (cipher_length == 26)
         {
             int msg_num = 0;
@@ -27,51 +27,97 @@ int main(int argc, string argv[])
                 if (isdigit(ciphertext[i]))
                 {
                     msg_num = 0; // false
+                    break;
                 }
                 else
                 {
                     msg_num = 1; // true
                 }
             }
-            if (msg_num == 1)
+            string cipher_cp = ciphertext;
+            int loop = 0;
+            int num = 0;
+            int count_char = 0;
+            int repeat_msg = 0;
+
+            while (true)
             {
-
-                string plaintext = get_string("plaintext: ");
-                int n = strlen(plaintext);
-                int a_letter = 'a';
-                char plaintext_cp[n]; // copy from the original text
-                char text[n];
-                strcpy(plaintext_cp, plaintext);
-
-                // to read the chars into plaintext
-                for (int i = 0; i < n; i++)
+                if (loop < strlen(ciphertext))
                 {
-                    char lower_char = tolower(plaintext_cp[i]);
-                    if (lower_char >= 'a' && lower_char <= 'z')
+                    if (tolower(ciphertext[loop]) == tolower(cipher_cp[num]))
                     {
-                        int covert_to_ascii = lower_char; // 101
-                        int index = covert_to_ascii - a_letter;
-                        if (islower(plaintext[i]))
+                        count_char += 1;
+                        if (count_char > 1)
                         {
-                            text[i] = tolower(ciphertext[index]);
+                            repeat_msg = 0; // false
+                            break;
                         }
                         else
                         {
-                            text[i] = toupper(ciphertext[index]);
+                            repeat_msg = 1; // true
                         }
                     }
-                    else
+                }
+                else
+                {
+                    loop = 0;   // reset loop
+                    num += 1;  // move to second position
+                    count_char = 0;  // reset count
+                    if (num >= strlen(ciphertext))
                     {
-                        text[i] = lower_char;
+                        break;
                     }
                 }
-                printf("ciphertext: %s\n", text);
-                return 0;
+                loop += 1;
+            }
+            // charge of alphabetic characters
+            if (msg_num == 1)
+            {
+                // charge of repeated characters
+                if (repeat_msg != 0)
+                {
+                    string plaintext = get_string("plaintext: ");
+                    int n = strlen(plaintext);
+                    int a_letter = 'a';
+                    char plaintext_cp[n + 1]; // copy from the original text
+                    char text[n + 1];
+                    strcpy(plaintext_cp, plaintext);
+
+                    // to read the chars into plaintext
+                    for (int i = 0; i < n; i++)
+                    {
+                        char lower_char = tolower(plaintext_cp[i]);
+                        if (lower_char >= 'a' && lower_char <= 'z')
+                        {
+                            int covert_to_ascii = lower_char;
+                            int index = covert_to_ascii - a_letter;
+                            if (islower(plaintext[i]))
+                            {
+                                text[i] = tolower(ciphertext[index]);
+                            }
+                            else
+                            {
+                                text[i] = toupper(ciphertext[index]);
+                            }
+                        }
+                        else
+                        {
+                            text[i] = lower_char;
+                        }
+                    }
+                    printf("ciphertext: %s\n", text);
+                    return 0;
+                }
+                else
+                {
+                    printf("key must not contain repeated character.\n");
+                    return 1;
+                }
             }
             else
             {
                 printf("%s\n", "key must only contain alphabetic characters.");
-                return 0;
+                return 1;
             }
         }
         else
